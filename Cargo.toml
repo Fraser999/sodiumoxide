@@ -11,7 +11,7 @@ version = "0.0.10"
 
 [dependencies]
 libc = "0.2"
-libsodium-sys = "0.0.10"
+libsodium-sys = { path = "libsodium-sys", version = "0.0.10" }
 rustc-serialize = { version = "0.3", optional = true }
 
 [dev-dependencies]
@@ -20,3 +20,4 @@ rustc-serialize = "0.3"
 [features]
 benchmarks = []
 default = ["rustc-serialize"]
+build-libsodium = ["libsodium-sys/build-libsodium"]
