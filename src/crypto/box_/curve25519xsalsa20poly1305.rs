@@ -56,8 +56,8 @@ pub fn gen_keypair() -> (PublicKey, SecretKey) {
         let mut pk = [0u8; PUBLICKEYBYTES];
         let mut sk = [0u8; SECRETKEYBYTES];
         ffi::crypto_box_curve25519xsalsa20poly1305_keypair(
-            &mut pk,
-            &mut sk);
+            pk.as_mut_ptr(),
+            sk.as_mut_ptr());
         (PublicKey(pk), SecretKey(sk))
     }
 }
@@ -84,9 +84,9 @@ pub fn seal(m: &[u8],
             ffi::crypto_box_curve25519xsalsa20poly1305(dst,
                                                        src,
                                                        len,
-                                                       n,
-                                                       pk,
-                                                       sk);
+                                                       n.as_ptr(),
+                                                       pk.as_ptr(),
+                                                       sk.as_ptr());
         }
     });
     c
@@ -107,9 +107,9 @@ pub fn open(c: &[u8],
             ffi::crypto_box_curve25519xsalsa20poly1305_open(dst,
                                                             src,
                                                             len,
-                                                            n,
-                                                            pk,
-                                                            sk)
+                                                            n.as_ptr(),
+                                                            pk.as_ptr(),
+                                                            sk.as_ptr())
         }
     });
     if ret == 0 {
@@ -135,9 +135,9 @@ pub fn precompute(&PublicKey(ref pk): &PublicKey,
                   &SecretKey(ref sk): &SecretKey) -> PrecomputedKey {
     let mut k = [0u8; PRECOMPUTEDKEYBYTES];
     unsafe {
-        ffi::crypto_box_curve25519xsalsa20poly1305_beforenm(&mut k,
-                                                            pk,
-                                                            sk);
+        ffi::crypto_box_curve25519xsalsa20poly1305_beforenm(k.as_mut_ptr(),
+                                                            pk.as_ptr(),
+                                                            sk.as_ptr());
     }
     PrecomputedKey(k)
 }
@@ -152,8 +152,8 @@ pub fn seal_precomputed(m: &[u8],
             ffi::crypto_box_curve25519xsalsa20poly1305_afternm(dst,
                                                                src,
                                                                len,
-                                                               n,
-                                                               k);
+                                                               n.as_ptr(),
+                                                               k.as_ptr());
         }
     });
     c
@@ -173,8 +173,8 @@ pub fn open_precomputed(c: &[u8],
             ffi::crypto_box_curve25519xsalsa20poly1305_open_afternm(dst,
                                                                     src,
                                                                     len,
-                                                                    n,
-                                                                    k)
+                                                                    n.as_ptr(),
+                                                                    k.as_ptr())
         }
     });
     if ret == 0 {

@@ -65,7 +65,7 @@ pub fn seal(m: &[u8],
     let (c, _) = marshal(m, ZEROBYTES, BOXZEROBYTES, |dst, src, len| {
         unsafe {
             ffi::crypto_secretbox_xsalsa20poly1305(dst, src, len,
-                                                   n, k)
+                                                   n.as_ptr(), k.as_ptr())
         }
     });
     c
@@ -85,8 +85,8 @@ pub fn open(c: &[u8],
             ffi::crypto_secretbox_xsalsa20poly1305_open(dst,
                                                         src,
                                                         len,
-                                                        n,
-                                                        k)
+                                                        n.as_ptr(),
+                                                        k.as_ptr())
         }
     });
     if ret == 0 {

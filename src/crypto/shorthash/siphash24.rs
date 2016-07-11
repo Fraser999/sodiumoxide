@@ -38,9 +38,9 @@ pub fn shorthash(m: &[u8],
                  &Key(ref k): &Key) -> Digest {
     unsafe {
         let mut h = [0; DIGESTBYTES];
-        ffi::crypto_shorthash_siphash24(&mut h, m.as_ptr(),
+        ffi::crypto_shorthash_siphash24(h.as_mut_ptr(), m.as_ptr(),
                                         m.len() as c_ulonglong,
-                                        k);
+                                        k.as_ptr());
         Digest(h)
     }
 }

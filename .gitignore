@@ -9,3 +9,5 @@
 Cargo.lock
 /target
 libsodium-sys/target
+systest/target
+

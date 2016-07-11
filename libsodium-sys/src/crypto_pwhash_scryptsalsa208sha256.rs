@@ -2,7 +2,7 @@
 
 pub const crypto_pwhash_scryptsalsa208sha256_SALTBYTES: usize = 32;
 pub const crypto_pwhash_scryptsalsa208sha256_STRBYTES: usize = 102;
-pub const crypto_pwhash_scryptsalsa208sha256_STRPREFIX: &'static str = "$7$";
+pub const crypto_pwhash_scryptsalsa208sha256_STRPREFIX: *const c_char = (b"$7$\0" as *const u8) as *const c_char;
 pub const crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE: usize =
     524288;
 pub const crypto_pwhash_scryptsalsa208sha256_MEMLIMIT_INTERACTIVE: usize =
@@ -26,20 +26,20 @@ extern {
     pub fn crypto_pwhash_scryptsalsa208sha256(
         out: *mut u8,
         outlen: c_ulonglong,
-        passwd: *const u8,
+        passwd: *const c_char,
         passwdlen: c_ulonglong,
-        salt: *const [u8; crypto_pwhash_scryptsalsa208sha256_SALTBYTES],
+        salt: *const u8,
         opslimit: c_ulonglong,
         memlimit: size_t) -> c_int;
     pub fn crypto_pwhash_scryptsalsa208sha256_str(
-        out: *mut [u8; crypto_pwhash_scryptsalsa208sha256_STRBYTES],
-        passwd: *const u8,
+        out: *mut c_char,
+        passwd: *const c_char,
         passwdlen: c_ulonglong,
         opslimit: c_ulonglong,
         memlimit: size_t) -> c_int;
     pub fn crypto_pwhash_scryptsalsa208sha256_str_verify(
-        str_: *const [u8; crypto_pwhash_scryptsalsa208sha256_STRBYTES],
-        passwd: *const u8,
+        str_: *const c_char,
+        passwd: *const c_char,
         passwdlen: c_ulonglong) -> c_int;
     pub fn crypto_pwhash_scryptsalsa208sha256_ll(
         passwd: *const u8,
@@ -92,11 +92,10 @@ fn test_crypto_pwhash_scryptsalsa208sha256_memlimit_sensitive() {
 }
 #[test]
 fn test_crypto_pwhash_scryptsalsa208sha256_strprefix() {
+    use std::ffi::CStr;
     unsafe {
-         let s = crypto_pwhash_scryptsalsa208sha256_strprefix();
-         let s = std::ffi::CStr::from_ptr(s).to_bytes();
-        assert!(s ==
-                crypto_pwhash_scryptsalsa208sha256_STRPREFIX.as_bytes());
+        assert_eq!(CStr::from_ptr(crypto_pwhash_scryptsalsa208sha256_STRPREFIX),
+                   CStr::from_ptr(crypto_pwhash_scryptsalsa208sha256_strprefix()));
     }
 }
 #[test]
@@ -106,8 +105,8 @@ fn test_crypto_pwhash_scryptsalsa208sha256_str() {
         [0; crypto_pwhash_scryptsalsa208sha256_STRBYTES];
     let ret_hash = unsafe {
         crypto_pwhash_scryptsalsa208sha256_str(
-            &mut hashed_password,
-            password.as_ptr(),
+            hashed_password.as_mut_ptr(),
+            password.as_ptr() as *const c_char,
             password.len() as c_ulonglong,
             crypto_pwhash_scryptsalsa208sha256_OPSLIMIT_INTERACTIVE
                 as c_ulonglong,
@@ -117,8 +116,8 @@ fn test_crypto_pwhash_scryptsalsa208sha256_str() {
     assert!(ret_hash == 0);
     let ret_verify = unsafe {
         crypto_pwhash_scryptsalsa208sha256_str_verify(
-            &hashed_password,
-            password.as_ptr(),
+            hashed_password.as_ptr(),
+            password.as_ptr() as *const c_char,
             password.len() as c_ulonglong)
     };
     assert!(ret_verify == 0);

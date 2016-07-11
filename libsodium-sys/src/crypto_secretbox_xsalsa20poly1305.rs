@@ -14,14 +14,14 @@ extern {
         c: *mut u8,
         m: *const u8,
         mlen: c_ulonglong,
-        n: *const [u8; crypto_secretbox_xsalsa20poly1305_NONCEBYTES],
-        k: *const [u8; crypto_secretbox_xsalsa20poly1305_KEYBYTES]) -> c_int;
+        n: *const u8,
+        k: *const u8) -> c_int;
     pub fn crypto_secretbox_xsalsa20poly1305_open(
         m: *mut u8,
         c: *const u8,
         clen: c_ulonglong,
-        n: *const [u8; crypto_secretbox_xsalsa20poly1305_NONCEBYTES],
-        k: *const [u8; crypto_secretbox_xsalsa20poly1305_KEYBYTES]) -> c_int;
+        n: *const u8,
+        k: *const u8) -> c_int;
     pub fn crypto_secretbox_xsalsa20poly1305_keybytes() -> size_t;
     pub fn crypto_secretbox_xsalsa20poly1305_noncebytes() -> size_t;
     pub fn crypto_secretbox_xsalsa20poly1305_zerobytes() -> size_t;

@@ -1,11 +1,12 @@
 //! Libsodium utility functions
 use ffi;
+use libc::c_void;
 
 /// `memzero()` tries to effectively zero out the data in `x` even if
 /// optimizations are being applied to the code.
 pub fn memzero(x: &mut [u8]) {
     unsafe {
-        ffi::sodium_memzero(x.as_mut_ptr(), x.len());
+        ffi::sodium_memzero(x.as_mut_ptr() as *mut c_void, x.len());
     }
 }
 
@@ -23,7 +24,7 @@ pub fn memcmp(x: &[u8], y: &[u8]) -> bool {
         return false
     }
     unsafe {
-        ffi::sodium_memcmp(x.as_ptr(), y.as_ptr(), x.len()) == 0
+        ffi::sodium_memcmp(x.as_ptr() as *mut c_void, y.as_ptr() as *mut c_void, x.len()) == 0
     }
 }
 

@@ -8,35 +8,35 @@ pub const crypto_sign_ed25519_SECRETKEYBYTES: usize = 64;
 
 extern {
     pub fn crypto_sign_ed25519_keypair(
-        pk: *mut [u8; crypto_sign_ed25519_PUBLICKEYBYTES],
-        sk: *mut [u8; crypto_sign_ed25519_SECRETKEYBYTES]) -> c_int;
+        pk: *mut u8,
+        sk: *mut u8) -> c_int;
     pub fn crypto_sign_ed25519_seed_keypair(
-        pk: *mut [u8; crypto_sign_ed25519_PUBLICKEYBYTES],
-        sk: *mut [u8; crypto_sign_ed25519_SECRETKEYBYTES],
-        seed: *const [u8; crypto_sign_ed25519_SEEDBYTES]) -> c_int;
+        pk: *mut u8,
+        sk: *mut u8,
+        seed: *const u8) -> c_int;
     pub fn crypto_sign_ed25519(
         sm: *mut u8,
         smlen: *mut c_ulonglong,
         m: *const u8,
         mlen: c_ulonglong,
-        sk: *const [u8; crypto_sign_ed25519_SECRETKEYBYTES]) -> c_int;
+        sk: *const u8) -> c_int;
     pub fn crypto_sign_ed25519_open(
         m: *mut u8,
         mlen: *mut c_ulonglong,
         sm: *const u8,
         smlen: c_ulonglong,
-        pk: *const [u8; crypto_sign_ed25519_PUBLICKEYBYTES]) -> c_int;
+        pk: *const u8) -> c_int;
     pub fn crypto_sign_ed25519_detached(
-        sig: *mut [u8; crypto_sign_ed25519_BYTES],
+        sig: *mut u8,
         siglen: *mut c_ulonglong,
         m: *const u8,
         mlen: c_ulonglong,
-        sk: *const [u8; crypto_sign_ed25519_SECRETKEYBYTES]) -> c_int;
+        sk: *const u8) -> c_int;
     pub fn crypto_sign_ed25519_verify_detached(
-        sig: *const [u8; crypto_sign_ed25519_BYTES],
+        sig: *const u8,
         m: *const u8,
         mlen: c_ulonglong,
-        pk: *const [u8; crypto_sign_ed25519_PUBLICKEYBYTES]) -> c_int;
+        pk: *const u8) -> c_int;
     pub fn crypto_sign_ed25519_bytes() -> size_t;
     pub fn crypto_sign_ed25519_seedbytes() -> size_t;
     pub fn crypto_sign_ed25519_publickeybytes() -> size_t;

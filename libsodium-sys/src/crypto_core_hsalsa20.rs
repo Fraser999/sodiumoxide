@@ -13,10 +13,10 @@ extern {
     pub fn crypto_core_hsalsa20_constbytes() -> size_t;
 
     pub fn crypto_core_hsalsa20(
-        out: *mut [u8; crypto_core_hsalsa20_OUTPUTBYTES],
-        in_: *const [u8; crypto_core_hsalsa20_INPUTBYTES],
-        k: *const [u8; crypto_core_hsalsa20_KEYBYTES],
-        c: *const [u8; crypto_core_hsalsa20_CONSTBYTES]) -> c_int;
+        out: *mut u8,
+        in_: *const u8,
+        k: *const u8,
+        c: *const u8) -> c_int;
 }
 
 

@@ -15,15 +15,15 @@ extern {
     pub fn crypto_auth_hmacsha512_bytes() -> size_t;
     pub fn crypto_auth_hmacsha512_keybytes() -> size_t;
     pub fn crypto_auth_hmacsha512(
-        a: *mut [u8; crypto_auth_hmacsha512_BYTES],
+        a: *mut u8,
         m: *const u8,
         mlen: c_ulonglong,
-        k: *const [u8; crypto_auth_hmacsha512_KEYBYTES]) -> c_int;
+        k: *const u8) -> c_int;
     pub fn crypto_auth_hmacsha512_verify(
-        a: *const [u8; crypto_auth_hmacsha512_BYTES],
+        a: *const u8,
         m: *const u8,
         mlen: c_ulonglong,
-        k: *const [u8; crypto_auth_hmacsha512_KEYBYTES]) -> c_int;
+        k: *const u8) -> c_int;
     pub fn crypto_auth_hmacsha512_init(
         state: *mut crypto_auth_hmacsha512_state,
         key: *const u8,
@@ -34,7 +34,7 @@ extern {
         mlen: c_ulonglong) -> c_int;
     pub fn crypto_auth_hmacsha512_final(
         state: *mut crypto_auth_hmacsha512_state,
-        a: *mut [u8; crypto_auth_hmacsha512_BYTES]) -> c_int;
+        a: *mut u8) -> c_int;
 }
 
 

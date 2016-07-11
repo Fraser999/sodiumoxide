@@ -60,8 +60,8 @@ pub fn stream(len: usize,
         let mut c: Vec<u8> = repeat(0u8).take(len).collect();
         $stream_name(c.as_mut_ptr(),
                      c.len() as c_ulonglong,
-                     n,
-                     k);
+                     n.as_ptr(),
+                     k.as_ptr());
         c
     }
 }
@@ -80,8 +80,8 @@ pub fn stream_xor(m: &[u8],
         $xor_name(c.as_mut_ptr(),
                   m.as_ptr(),
                   m.len() as c_ulonglong,
-                  n,
-                  k);
+                  n.as_ptr(),
+                  k.as_ptr());
         c
     }
 }
@@ -99,8 +99,8 @@ pub fn stream_xor_inplace(m: &mut [u8],
         $xor_name(m.as_mut_ptr(),
                   m.as_ptr(),
                   m.len() as c_ulonglong,
-                  n,
-                  k);
+                  n.as_ptr(),
+                  k.as_ptr());
     }
 }
 

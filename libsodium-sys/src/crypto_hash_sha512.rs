@@ -12,8 +12,8 @@ pub const crypto_hash_sha512_BYTES: usize = 64;
 
 
 extern {
-    pub fn crypto_hash_sha512_bytes() -> size_t;    
-    pub fn crypto_hash_sha512(h: *mut [u8; crypto_hash_sha512_BYTES],
+    pub fn crypto_hash_sha512_bytes() -> size_t;
+    pub fn crypto_hash_sha512(h: *mut u8,
                               m: *const u8,
                               mlen: c_ulonglong) -> c_int;
     pub fn crypto_hash_sha512_init(state: *mut crypto_hash_sha512_state) -> c_int;
@@ -21,7 +21,7 @@ extern {
                                      m: *const u8,
                                      mlen: c_ulonglong) -> c_int;
     pub fn crypto_hash_sha512_final(state: *mut crypto_hash_sha512_state,
-                                    h: *mut [u8; crypto_hash_sha512_BYTES]) -> c_int;
+                                    h: *mut u8) -> c_int;
 }
 
 

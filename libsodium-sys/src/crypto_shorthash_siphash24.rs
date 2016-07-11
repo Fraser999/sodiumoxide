@@ -6,10 +6,10 @@ pub const crypto_shorthash_siphash24_KEYBYTES: usize = 16;
 
 extern {
     pub fn crypto_shorthash_siphash24(
-        h: *mut [u8; crypto_shorthash_siphash24_BYTES],
+        h: *mut u8,
         m: *const u8,
         mlen: c_ulonglong,
-        k: *const [u8; crypto_shorthash_siphash24_KEYBYTES]) -> c_int;
+        k: *const u8) -> c_int;
     pub fn crypto_shorthash_siphash24_bytes() -> size_t;
     pub fn crypto_shorthash_siphash24_keybytes() -> size_t;
 }

@@ -2,7 +2,7 @@
 //! and SHA-256
 use ffi;
 use randombytes::randombytes_into;
-use libc::c_ulonglong;
+use libc::{c_char, c_ulonglong};
 
 /// Number of bytes in a `Salt`.
 pub const SALTBYTES: usize = ffi::crypto_pwhash_scryptsalsa208sha256_SALTBYTES;
@@ -11,7 +11,7 @@ pub const SALTBYTES: usize = ffi::crypto_pwhash_scryptsalsa208sha256_SALTBYTES;
 pub const HASHEDPASSWORDBYTES: usize = ffi::crypto_pwhash_scryptsalsa208sha256_STRBYTES;
 
 /// All `HashedPasswords` start with this string.
-pub const STRPREFIX: &'static str = ffi::crypto_pwhash_scryptsalsa208sha256_STRPREFIX;
+pub const STRPREFIX: &'static str = "$7$";
 
 /// Safe base line for `OpsLimit` for interactive password hashing.
 pub const OPSLIMIT_INTERACTIVE: OpsLimit =
@@ -107,9 +107,9 @@ pub fn derive_key<'a>(key: &'a mut [u8], passwd: &[u8], &Salt(ref sb): &Salt,
     if unsafe {
         ffi::crypto_pwhash_scryptsalsa208sha256(key.as_mut_ptr(),
                                                 key.len() as c_ulonglong,
-                                                passwd.as_ptr(),
+                                                passwd.as_ptr() as *const c_char,
                                                 passwd.len() as c_ulonglong,
-                                                sb,
+                                                sb.as_ptr(),
                                                 opslimit as c_ulonglong,
                                                 memlimit)
     } == 0 {
@@ -138,8 +138,8 @@ pub fn pwhash(passwd: &[u8], OpsLimit(opslimit): OpsLimit,
     let mut out = HashedPassword([0; HASHEDPASSWORDBYTES]);
     if unsafe {
         let HashedPassword(ref mut str_) = out;
-        ffi::crypto_pwhash_scryptsalsa208sha256_str(str_,
-                                                    passwd.as_ptr(),
+        ffi::crypto_pwhash_scryptsalsa208sha256_str(str_.as_mut_ptr() as *mut c_char,
+                                                    passwd.as_ptr() as *const c_char,
                                                     passwd.len() as c_ulonglong,
                                                     opslimit as c_ulonglong,
                                                     memlimit)
@@ -157,8 +157,8 @@ pub fn pwhash(passwd: &[u8], OpsLimit(opslimit): OpsLimit,
 pub fn pwhash_verify(&HashedPassword(ref str_): &HashedPassword,
                      passwd: &[u8]) -> bool {
     unsafe {
-        ffi::crypto_pwhash_scryptsalsa208sha256_str_verify(str_,
-                                                           passwd.as_ptr(),
+        ffi::crypto_pwhash_scryptsalsa208sha256_str_verify(str_.as_ptr() as *const c_char,
+                                                           passwd.as_ptr() as *const c_char,
                                                            passwd.len() as c_ulonglong)
             == 0
     }
@@ -167,6 +167,16 @@ pub fn pwhash_verify(&HashedPassword(ref str_): &HashedPassword,
 #[cfg(test)]
 mod test {
     use super::*;
+    use ffi;
+    use std::ffi::CStr;
+
+    #[test]
+    fn test_str_prefix() {
+        let str_prefix = unsafe {
+            CStr::from_ptr(ffi::crypto_pwhash_scryptsalsa208sha256_STRPREFIX).to_str().unwrap()
+        };
+        assert_eq!(STRPREFIX, str_prefix);
+    }
 
     #[test]
     fn test_derive_key() {

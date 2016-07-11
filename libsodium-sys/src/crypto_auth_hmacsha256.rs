@@ -15,15 +15,15 @@ extern {
     pub fn crypto_auth_hmacsha256_bytes() -> size_t;
     pub fn crypto_auth_hmacsha256_keybytes() -> size_t;
     pub fn crypto_auth_hmacsha256(
-        a: *mut [u8; crypto_auth_hmacsha256_BYTES],
+        a: *mut u8,
         m: *const u8,
         mlen: c_ulonglong,
-        k: *const [u8; crypto_auth_hmacsha256_KEYBYTES]) -> c_int;
+        k: *const u8) -> c_int;
     pub fn crypto_auth_hmacsha256_verify(
-        a: *const [u8; crypto_auth_hmacsha256_BYTES],
+        a: *const u8,
         m: *const u8,
         mlen: c_ulonglong,
-        k: *const [u8; crypto_auth_hmacsha256_KEYBYTES]) -> c_int;
+        k: *const u8) -> c_int;
     pub fn crypto_auth_hmacsha256_init(
         state: *mut crypto_auth_hmacsha256_state,
         key: *const u8,
@@ -34,7 +34,7 @@ extern {
         mlen: c_ulonglong) -> c_int;
     pub fn crypto_auth_hmacsha256_final(
         state: *mut crypto_auth_hmacsha256_state,
-        a: *mut [u8; crypto_auth_hmacsha256_BYTES]) -> c_int;
+        a: *mut u8) -> c_int;
 }
 
 
