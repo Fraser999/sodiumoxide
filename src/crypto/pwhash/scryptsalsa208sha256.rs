@@ -3,6 +3,8 @@
 use ffi;
 use randombytes::randombytes_into;
 use libc::c_ulonglong;
+#[cfg(feature = "use-rustc-serialize")]
+use rustc_serialize;
 
 /// Number of bytes in a `Salt`.
 pub const SALTBYTES: usize = ffi::crypto_pwhash_scryptsalsa208sha256_SALTBYTES;
@@ -208,7 +210,7 @@ mod test {
         }
     }
 
-    #[cfg(feature = "default")]
+    #[cfg(any(feature = "serde", feature = "use-rustc-serialize"))]
     #[test]
     fn test_serialisation() {
         use randombytes::randombytes;

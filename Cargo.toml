@@ -12,14 +12,16 @@ version = "0.0.12"
 [dependencies]
 libc = "0.2"
 libsodium-sys = { path = "libsodium-sys", version = "0.0.12" }
-serde = { version = "0.7", optional = true }
+rustc-serialize = { version = "0.3", optional = true }
+serde = { version="0.7", optional = true }
 
 [dev-dependencies]
+rustc-serialize = "0.3"
 serde = "0.7"
 serde_json = "0.7"
-rustc-serialize = "0.3"
 
 [features]
 benchmarks = []
 default = ["serde"]
 get-libsodium = ["libsodium-sys/get-libsodium"]
+use-rustc-serialize = ["rustc-serialize"]

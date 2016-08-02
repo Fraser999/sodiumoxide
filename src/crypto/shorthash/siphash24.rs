@@ -2,6 +2,8 @@
 use ffi;
 use libc::c_ulonglong;
 use randombytes::randombytes_into;
+#[cfg(feature = "use-rustc-serialize")]
+use rustc_serialize;
 
 /// Number of bytes in a `Digest`.
 pub const DIGESTBYTES: usize = ffi::crypto_shorthash_siphash24_BYTES;
@@ -127,7 +129,7 @@ mod test {
         }
     }
 
-    #[cfg(feature = "default")]
+    #[cfg(any(feature = "serde", feature = "use-rustc-serialize"))]
     #[test]
     fn test_serialisation() {
         use randombytes::randombytes;

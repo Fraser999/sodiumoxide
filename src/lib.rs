@@ -55,10 +55,10 @@
 
 extern crate libsodium_sys as ffi;
 extern crate libc;
-#[cfg(any(test, feature = "default"))]
-extern crate serde;
-#[cfg(test)]
+#[cfg(any(test, feature = "use-rustc-serialize"))]
 extern crate rustc_serialize;
+#[cfg(any(test, feature = "serde"))]
+extern crate serde;
 
 /// `init()` initializes the sodium library and chooses faster versions of
 /// the primitives if possible. `init()` also makes the random number generation

@@ -38,7 +38,7 @@ macro_rules! newtype_traits (($newtype:ident, $len:expr) => (
     }
     impl ::std::cmp::Eq for $newtype {}
 
-    #[cfg(feature = "default")]
+    #[cfg(feature = "serde")]
     impl ::serde::Serialize for $newtype {
         fn serialize<S>(&self, serializer: &mut S) -> Result<(), S::Error>
             where S: ::serde::Serializer
@@ -47,7 +47,20 @@ macro_rules! newtype_traits (($newtype:ident, $len:expr) => (
         }
     }
 
-    #[cfg(feature = "default")]
+    #[cfg(feature = "use-rustc-serialize")]
+    impl rustc_serialize::Encodable for $newtype {
+        fn encode<E: rustc_serialize::Encoder>(&self, encoder: &mut E)
+                -> Result<(), E::Error> {
+            encoder.emit_seq($len, |encoder| {
+                for (i, e) in self[..].iter().enumerate() {
+                    try!(encoder.emit_seq_elt(i, |encoder| e.encode(encoder)))
+                }
+                Ok(())
+            })
+        }
+    }
+
+    #[cfg(feature = "serde")]
     impl ::serde::Deserialize for $newtype {
         fn deserialize<D>(deserializer: &mut D) -> Result<$newtype, D::Error>
             where D: ::serde::Deserializer
@@ -73,6 +86,29 @@ macro_rules! newtype_traits (($newtype:ident, $len:expr) => (
                 }
             }
             deserializer.deserialize_bytes(NewtypeVisitor)
+        }
+    }
+
+    #[cfg(feature = "use-rustc-serialize")]
+    impl rustc_serialize::Decodable for $newtype {
+        fn decode<D: rustc_serialize::Decoder>(decoder: &mut D)
+                -> Result<$newtype, D::Error> {
+            decoder.read_seq(|decoder, len| {
+                if len != $len {
+                    return Err(decoder.error(
+                        &format!("Expecting array of length: {}, but found {}",
+                                 $len, len)));
+                }
+                let mut res = $newtype([0; $len]);
+                {
+                    let $newtype(ref mut arr) = res;
+                    for (i, val) in arr.iter_mut().enumerate() {
+                        *val = try!(decoder.read_seq_elt(i,
+                            |decoder| rustc_serialize::Decodable::decode(decoder)));
+                    }
+                }
+                Ok(res)
+            })
         }
     }
 

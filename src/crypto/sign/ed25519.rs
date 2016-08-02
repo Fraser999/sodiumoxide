@@ -5,6 +5,8 @@
 use ffi;
 use libc::c_ulonglong;
 use std::iter::repeat;
+#[cfg(feature = "use-rustc-serialize")]
+use rustc_serialize;
 
 /// Number of bytes in a `Seed`.
 pub const SEEDBYTES: usize = ffi::crypto_sign_ed25519_SEEDBYTES;
@@ -299,7 +301,7 @@ mod test {
         }
     }
 
-    #[cfg(feature = "default")]
+    #[cfg(any(feature = "serde", feature = "use-rustc-serialize"))]
     #[test]
     fn test_serialisation() {
         use randombytes::randombytes;
