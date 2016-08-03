@@ -142,9 +142,17 @@ fn main() {
     let basename = "libsodium-".to_string() + VERSION;
     let gz_filename = basename.clone() + ".tar.gz";
     let url = "https://download.libsodium.org/libsodium/releases/".to_string() + &gz_filename;
-    let install_dir = get_install_dir();
-    let gz_path = install_dir.clone() + "/" + &gz_filename;
+    let mut install_dir = get_install_dir();
+    let mut source_dir = unwrap!(env::var("OUT_DIR")) + "/source";
+    // Avoid issues with paths containing spaces by falling back to using /tmp
+    let target = unwrap!(env::var("TARGET"));
+    if install_dir.contains(" ") {
+        install_dir = "/tmp/".to_string() + &basename + "/" + &target + "/installed";
+        source_dir = "/tmp/".to_string() + &basename + "/" + &target + "/source";
+    }
+    let gz_path = source_dir.clone() + "/" + &gz_filename;
     unwrap!(fs::create_dir_all(&install_dir));
+    unwrap!(fs::create_dir_all(&source_dir));
 
     let curl_output = Command::new("curl")
         .arg(&url)
@@ -164,7 +172,8 @@ fn main() {
     let gz_archive = unwrap!(File::open(&gz_path));
     let gz_decoder = unwrap!(GzDecoder::new(gz_archive));
     let mut archive = Archive::new(gz_decoder);
-    unwrap!(archive.unpack("."));
+    unwrap!(archive.unpack(&source_dir));
+    source_dir.push_str(&format!("/{}", basename));
 
     // Clean up
     let _ = fs::remove_file(gz_path);
@@ -173,11 +182,11 @@ fn main() {
     let gcc = gcc::Config::new();
     let cc = format!("{}", gcc.get_compiler().path().display());
     let prefix_arg = format!("--prefix={}", install_dir);
-    let target = unwrap!(env::var("TARGET"));
+    let host = unwrap!(env::var("HOST"));
     let host_arg = format!("--host={}", target);
 
     let configure_output = Command::new("./configure")
-        .current_dir(&basename)
+        .current_dir(&source_dir)
         .env("CC", &cc)
         .arg(&prefix_arg)
         .arg(&host_arg)
@@ -192,12 +201,17 @@ fn main() {
                String::from_utf8_lossy(&configure_output.stderr));
     }
 
-    // Run `make check`
+    // Run `make check`, or `make all` if we're cross-compiling
     let j_arg = format!("-j{}", unwrap!(env::var("NUM_JOBS")));
+    let make_arg = if target == host {
+        "check"
+    } else {
+        "all"
+    };
     let make_output = Command::new("make")
-        .current_dir(&basename)
+        .current_dir(&source_dir)
         .env("V", "1")
-        .arg("check")
+        .arg(make_arg)
         .arg(&j_arg)
         .output()
         .unwrap_or_else(|error| {
@@ -212,7 +226,7 @@ fn main() {
 
     // Run `make install`
     let install_output = Command::new("make")
-        .current_dir(&basename)
+        .current_dir(&source_dir)
         .arg("install")
         .output()
         .unwrap_or_else(|error| {
