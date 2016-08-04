@@ -12,10 +12,10 @@ extern {
     pub fn crypto_core_salsa2012_constbytes() -> size_t;
 
     pub fn crypto_core_salsa2012(
-        out: *mut [u8; crypto_core_salsa2012_OUTPUTBYTES],
-        in_: *const [u8; crypto_core_salsa2012_INPUTBYTES],
-        k: *const [u8; crypto_core_salsa2012_KEYBYTES],
-        c: *const [u8; crypto_core_salsa2012_CONSTBYTES]) -> c_int;
+        out: *mut u8,
+        in_: *const u8,
+        k: *const u8,
+        c: *const u8) -> c_int;
 }
 
 #[test]

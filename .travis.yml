@@ -10,8 +10,11 @@ install:
 script:
 - cargo build --verbose
 - cargo test --verbose
+- cargo test --verbose --manifest-path libsodium-sys/Cargo.toml
 - cargo test --verbose --no-default-features
 - cargo test --verbose --features get-libsodium
+- cargo test --verbose --features get-libsodium --manifest-path libsodium-sys/Cargo.toml
+- cargo run --manifest-path systest/Cargo.toml
 - cargo doc
 after_script:
 - cd target/doc

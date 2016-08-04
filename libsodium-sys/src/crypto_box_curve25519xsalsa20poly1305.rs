@@ -14,43 +14,43 @@ pub const crypto_box_curve25519xsalsa20poly1305_MACBYTES: usize =
 
 extern {
     pub fn crypto_box_curve25519xsalsa20poly1305_keypair(
-        pk: *mut [u8; crypto_box_curve25519xsalsa20poly1305_PUBLICKEYBYTES],
-        sk: *mut [u8; crypto_box_curve25519xsalsa20poly1305_SECRETKEYBYTES])
+        pk: *mut u8,
+        sk: *mut u8)
         -> c_int;
     pub fn crypto_box_curve25519xsalsa20poly1305(
         c: *mut u8,
         m: *const u8,
         mlen: c_ulonglong,
-        n: *const [u8; crypto_box_curve25519xsalsa20poly1305_NONCEBYTES],
-        pk: *const [u8; crypto_box_curve25519xsalsa20poly1305_PUBLICKEYBYTES],
-        sk: *const [u8; crypto_box_curve25519xsalsa20poly1305_SECRETKEYBYTES])
+        n: *const u8,
+        pk: *const u8,
+        sk: *const u8)
         -> c_int;
     pub fn crypto_box_curve25519xsalsa20poly1305_open(
         m: *mut u8,
         c: *const u8,
         clen: c_ulonglong,
-        n: *const [u8; crypto_box_curve25519xsalsa20poly1305_NONCEBYTES],
-        pk: *const [u8; crypto_box_curve25519xsalsa20poly1305_PUBLICKEYBYTES],
-        sk: *const [u8; crypto_box_curve25519xsalsa20poly1305_SECRETKEYBYTES])
+        n: *const u8,
+        pk: *const u8,
+        sk: *const u8)
         -> c_int;
     pub fn crypto_box_curve25519xsalsa20poly1305_beforenm(
-        k: *mut [u8; crypto_box_curve25519xsalsa20poly1305_BEFORENMBYTES],
-        pk: *const [u8; crypto_box_curve25519xsalsa20poly1305_PUBLICKEYBYTES],
-        sk: *const [u8; crypto_box_curve25519xsalsa20poly1305_SECRETKEYBYTES])
+        k: *mut u8,
+        pk: *const u8,
+        sk: *const u8)
         -> c_int;
     pub fn crypto_box_curve25519xsalsa20poly1305_afternm(
         c: *mut u8,
         m: *const u8,
         mlen: c_ulonglong,
-        n: *const [u8; crypto_box_curve25519xsalsa20poly1305_NONCEBYTES],
-        k: *const [u8; crypto_box_curve25519xsalsa20poly1305_BEFORENMBYTES])
+        n: *const u8,
+        k: *const u8)
         -> c_int;
     pub fn crypto_box_curve25519xsalsa20poly1305_open_afternm(
         m: *mut u8,
         c: *const u8,
         clen: c_ulonglong,
-        n: *const [u8; crypto_box_curve25519xsalsa20poly1305_NONCEBYTES],
-        k: *const [u8; crypto_box_curve25519xsalsa20poly1305_BEFORENMBYTES])
+        n: *const u8,
+        k: *const u8)
         -> c_int;
     pub fn crypto_box_curve25519xsalsa20poly1305_seedbytes() -> size_t;
     pub fn crypto_box_curve25519xsalsa20poly1305_publickeybytes() -> size_t;

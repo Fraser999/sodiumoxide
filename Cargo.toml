@@ -24,4 +24,3 @@ serde_json = "0.7"
 benchmarks = []
 default = ["serde"]
 get-libsodium = ["libsodium-sys/get-libsodium"]
-use-rustc-serialize = ["rustc-serialize"]

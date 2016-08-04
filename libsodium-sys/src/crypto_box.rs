@@ -8,7 +8,7 @@ pub const crypto_box_NONCEBYTES: usize = crypto_box_curve25519xsalsa20poly1305_N
 pub const crypto_box_ZEROBYTES: usize = crypto_box_curve25519xsalsa20poly1305_ZEROBYTES;
 pub const crypto_box_BOXZEROBYTES: usize = crypto_box_curve25519xsalsa20poly1305_BOXZEROBYTES;
 pub const crypto_box_MACBYTES: usize = crypto_box_curve25519xsalsa20poly1305_MACBYTES;
-pub const crypto_box_PRIMITIVE: &'static str = "curve25519xsalsa20poly1305";
+pub const crypto_box_PRIMITIVE: *const c_char = (b"curve25519xsalsa20poly1305\0" as *const u8) as *const c_char;
 pub const crypto_box_SEALBYTES: usize = (crypto_box_PUBLICKEYBYTES + crypto_box_MACBYTES);
 
 
@@ -25,95 +25,95 @@ extern {
     pub fn crypto_box_sealbytes() -> size_t;
 
     pub fn crypto_box_seed_keypair(
-        pk: *mut [u8; crypto_box_PUBLICKEYBYTES],
-        sk: *mut [u8; crypto_box_SECRETKEYBYTES],
-        seed: *const [u8; crypto_box_SEEDBYTES])
+        pk: *mut u8,
+        sk: *mut u8,
+        seed: *const u8)
         -> c_int;
     pub fn crypto_box_keypair(
-        pk: *mut [u8; crypto_box_PUBLICKEYBYTES],
-        sk: *mut [u8; crypto_box_SECRETKEYBYTES])
+        pk: *mut u8,
+        sk: *mut u8)
         -> c_int;
     pub fn crypto_box_beforenm(
-        k: *mut [u8; crypto_box_BEFORENMBYTES],
-        pk: *const [u8; crypto_box_PUBLICKEYBYTES],
-        sk: *const [u8; crypto_box_SECRETKEYBYTES])
+        k: *mut u8,
+        pk: *const u8,
+        sk: *const u8)
         -> c_int;
     pub fn crypto_box_afternm(
         c: *mut u8,
         m: *const u8,
         mlen: c_ulonglong,
-        n: *const [u8; crypto_box_NONCEBYTES],
-        k: *const [u8; crypto_box_BEFORENMBYTES])
+        n: *const u8,
+        k: *const u8)
         -> c_int;
     pub fn crypto_box_open_afternm(
         m: *mut u8,
         c: *const u8,
         clen: c_ulonglong,
-        n: *const [u8; crypto_box_NONCEBYTES],
-        k: *const [u8; crypto_box_BEFORENMBYTES])
+        n: *const u8,
+        k: *const u8)
         -> c_int;
     pub fn crypto_box(
         c: *mut u8,
         m: *const u8,
         mlen: c_ulonglong,
-        n: *const [u8; crypto_box_NONCEBYTES],
-        pk: *const [u8; crypto_box_PUBLICKEYBYTES],
-        sk: *const [u8; crypto_box_SECRETKEYBYTES])
+        n: *const u8,
+        pk: *const u8,
+        sk: *const u8)
         -> c_int;
     pub fn crypto_box_open(
         m: *mut u8,
         c: *const u8,
         clen: c_ulonglong,
-        n: *const [u8; crypto_box_NONCEBYTES],
-        pk: *const [u8; crypto_box_PUBLICKEYBYTES],
-        sk: *const [u8; crypto_box_SECRETKEYBYTES])
+        n: *const u8,
+        pk: *const u8,
+        sk: *const u8)
         -> c_int;
     pub fn crypto_box_easy(
         c: *mut u8,
         m: *const u8,
         mlen: c_ulonglong,
-        n: *const [u8; crypto_box_NONCEBYTES],
-        pk: *const [u8; crypto_box_PUBLICKEYBYTES],
-        sk: *const [u8; crypto_box_SECRETKEYBYTES])
+        n: *const u8,
+        pk: *const u8,
+        sk: *const u8)
         -> c_int;
     pub fn crypto_box_open_easy(
         m: *mut u8,
         c: *const u8,
         clen: c_ulonglong,
-        n: *const [u8; crypto_box_NONCEBYTES],
-        pk: *const [u8; crypto_box_PUBLICKEYBYTES],
-        sk: *const [u8; crypto_box_SECRETKEYBYTES])
+        n: *const u8,
+        pk: *const u8,
+        sk: *const u8)
         -> c_int;
     pub fn crypto_box_detached(
         c: *mut u8,
-        mac: *mut [u8; crypto_box_MACBYTES],
+        mac: *mut u8,
         m: *const u8,
         mlen: c_ulonglong,
-        n: *const [u8; crypto_box_NONCEBYTES],
-        pk: *const [u8; crypto_box_PUBLICKEYBYTES],
-        sk: *const [u8; crypto_box_SECRETKEYBYTES])
+        n: *const u8,
+        pk: *const u8,
+        sk: *const u8)
         -> c_int;
     pub fn crypto_box_open_detached(
         m: *mut u8,
         c: *const u8,
-        mac: *const [u8; crypto_box_MACBYTES],
+        mac: *const u8,
         clen: c_ulonglong,
-        n: *const [u8; crypto_box_NONCEBYTES],
-        pk: *const [u8; crypto_box_PUBLICKEYBYTES],
-        sk: *const [u8; crypto_box_SECRETKEYBYTES])
+        n: *const u8,
+        pk: *const u8,
+        sk: *const u8)
         -> c_int;
     pub fn crypto_box_seal(
         c: *mut u8,
         m: *const u8,
         mlen: c_ulonglong,
-        pk: *const [u8; crypto_box_PUBLICKEYBYTES])
+        pk: *const u8)
         -> c_int;
     pub fn crypto_box_seal_open(
         m: *mut u8,
         c: *const u8,
         clen: c_ulonglong,
-        pk: *const [u8; crypto_box_PUBLICKEYBYTES],
-        sk: *const [u8; crypto_box_SECRETKEYBYTES])
+        pk: *const u8,
+        sk: *const u8)
         -> c_int;
 }
 
@@ -167,10 +167,9 @@ fn test_crypto_box_macbytes() {
 }
 #[test]
 fn test_crypto_box_primitive() {
+    use std::ffi::CStr;
     unsafe {
-        let s = crypto_box_primitive();
-        let s = std::ffi::CStr::from_ptr(s).to_bytes();
-        assert!(s == crypto_box_PRIMITIVE.as_bytes());
+        assert_eq!(CStr::from_ptr(crypto_box_PRIMITIVE), CStr::from_ptr(crypto_box_primitive()));
     }
 }
 #[test]

@@ -38,8 +38,8 @@ extern {
         inlen: c_ulonglong,
         key: *const u8,
         keylen: size_t,
-        salt: *const [u8; crypto_generichash_blake2b_SALTBYTES],
-        personal: *const [u8; crypto_generichash_blake2b_PERSONALBYTES])
+        salt: *const u8,
+        personal: *const u8)
         -> c_int;
 
     pub fn crypto_generichash_blake2b_init(
@@ -54,8 +54,8 @@ extern {
         key: *const u8,
         keylen: size_t,
         outlen: size_t,
-        salt: *const [u8; crypto_generichash_blake2b_SALTBYTES],
-        personal: *const [u8; crypto_generichash_blake2b_PERSONALBYTES])
+        salt: *const u8,
+        personal: *const u8)
         -> c_int;
 
     pub fn crypto_generichash_blake2b_update(
@@ -144,6 +144,6 @@ fn test_crypto_generichash_blake2b_salt_personal() {
         crypto_generichash_blake2b_salt_personal(out.as_mut_ptr(), out.len(),
                            m.as_ptr(), m.len() as u64,
                            key.as_ptr(), key.len(),
-                           &salt, &personal)
+                           salt.as_ptr(), personal.as_ptr())
     }, 0);
 }

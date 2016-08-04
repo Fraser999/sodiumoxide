@@ -3,23 +3,23 @@
 #[allow(non_camel_case_types)]
 pub type crypto_auth_hmacsha512256_state = crypto_auth_hmacsha512_state;
 
-pub const crypto_auth_hmacsha512256_BYTES: usize = 32;
-pub const crypto_auth_hmacsha512256_KEYBYTES: usize = 32;
+pub const crypto_auth_hmacsha512256_BYTES: size_t = 32;
+pub const crypto_auth_hmacsha512256_KEYBYTES: size_t = 32;
 
 
 extern {
     pub fn crypto_auth_hmacsha512256_bytes() -> size_t;
     pub fn crypto_auth_hmacsha512256_keybytes() -> size_t;
     pub fn crypto_auth_hmacsha512256(
-        a: *mut [u8; crypto_auth_hmacsha512256_BYTES],
+        a: *mut u8,
         m: *const u8,
         mlen: c_ulonglong,
-        k: *const [u8; crypto_auth_hmacsha512256_KEYBYTES]) -> c_int;
+        k: *const u8) -> c_int;
     pub fn crypto_auth_hmacsha512256_verify(
-        a: *const [u8; crypto_auth_hmacsha512256_BYTES],
+        a: *const u8,
         m: *const u8,
         mlen: c_ulonglong,
-        k: *const [u8; crypto_auth_hmacsha512256_KEYBYTES]) -> c_int;
+        k: *const u8) -> c_int;
     pub fn crypto_auth_hmacsha512256_init(
         state: *mut crypto_auth_hmacsha512256_state,
         key: *const u8,
@@ -30,7 +30,7 @@ extern {
         mlen: c_ulonglong) -> c_int;
     pub fn crypto_auth_hmacsha512256_final(
         state: *mut crypto_auth_hmacsha512256_state,
-        a: *mut [u8; crypto_auth_hmacsha512256_BYTES]) -> c_int;
+        a: *mut u8) -> c_int;
 }
 
 

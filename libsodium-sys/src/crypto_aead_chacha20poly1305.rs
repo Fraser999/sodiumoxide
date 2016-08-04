@@ -18,19 +18,19 @@ extern {
         mlen: c_ulonglong,
         ad: *const u8,
         adlen: c_ulonglong,
-        nsec: *const [u8; crypto_aead_chacha20poly1305_NSECBYTES],
-        npub: *const [u8; crypto_aead_chacha20poly1305_NPUBBYTES],
-        k: *const [u8; crypto_aead_chacha20poly1305_KEYBYTES]) -> c_int;
+        nsec: *const u8,
+        npub: *const u8,
+        k: *const u8) -> c_int;
     pub fn crypto_aead_chacha20poly1305_decrypt(
         m: *mut u8,
         mlen: *mut c_ulonglong,
-        nsec: *mut [u8; crypto_aead_chacha20poly1305_NSECBYTES],
+        nsec: *mut u8,
         c: *const u8,
         clen: c_ulonglong,
         ad: *const u8,
         adlen: c_ulonglong,
-        npub: *const [u8; crypto_aead_chacha20poly1305_NPUBBYTES],
-        k: *const [u8; crypto_aead_chacha20poly1305_KEYBYTES]) -> c_int;
+        npub: *const u8,
+        k: *const u8) -> c_int;
 }
 
 

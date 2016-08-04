@@ -47,10 +47,10 @@ pub fn authenticate(m: &[u8],
                     &Key(ref k): &Key) -> Tag {
     unsafe {
         let mut tag = [0; TAGBYTES];
-        $auth_name(&mut tag,
+        $auth_name(tag.as_mut_ptr(),
                    m.as_ptr(),
                    m.len() as c_ulonglong,
-                   k);
+                   k.as_ptr());
         Tag(tag)
     }
 }
@@ -60,10 +60,10 @@ pub fn authenticate(m: &[u8],
 pub fn verify(&Tag(ref tag): &Tag, m: &[u8],
               &Key(ref k): &Key) -> bool {
     unsafe {
-        $verify_name(tag,
+        $verify_name(tag.as_ptr(),
                      m.as_ptr(),
                      m.len() as c_ulonglong,
-                     k) == 0
+                     k.as_ptr()) == 0
     }
 }
 
@@ -199,10 +199,11 @@ pub struct State($state_name);
 
 impl Drop for State {
     fn drop(&mut self) {
+        use libc::c_void;
         let &mut State(ref mut s) = self;
         unsafe {
             let sp: *mut $state_name = s;
-            ffi::sodium_memzero(sp as *mut u8, mem::size_of_val(s));
+            ffi::sodium_memzero(sp as *mut c_void, mem::size_of_val(s));
         }
     }
 }
@@ -231,7 +232,7 @@ impl State {
         unsafe {
             let &mut State(ref mut state) = self;
             let mut tag = [0; $tagbytes as usize];
-            $final_name(state, &mut tag);
+            $final_name(state, tag.as_mut_ptr());
             Tag(tag)
         }
     }

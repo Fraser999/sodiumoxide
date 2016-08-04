@@ -21,7 +21,7 @@ pub fn seal(m: &[u8],
     unsafe {
         ffi::crypto_box_seal(c.as_mut_ptr(),
                              m.as_ptr(), m.len() as c_ulonglong,
-                             pk);
+                             pk.as_ptr());
     }
     c
 }
@@ -47,7 +47,7 @@ pub fn open(c: &[u8],
     let ret = unsafe {
         ffi::crypto_box_seal_open(m.as_mut_ptr(),
                                   c.as_ptr(), c.len() as c_ulonglong,
-                                  pk, sk)
+                                  pk.as_ptr(), sk.as_ptr())
     };
     if ret == 0 {
         Ok(m)

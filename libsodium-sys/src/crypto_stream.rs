@@ -3,7 +3,7 @@
 pub const crypto_stream_KEYBYTES: usize = crypto_stream_xsalsa20_KEYBYTES;
 pub const crypto_stream_NONCEBYTES: usize =
     crypto_stream_xsalsa20_NONCEBYTES;
-pub const crypto_stream_PRIMITIVE: &'static str = "xsalsa20";
+pub const crypto_stream_PRIMITIVE: *const c_char = (b"xsalsa20\0" as *const u8) as *const c_char;
 
 
 extern {
@@ -25,9 +25,9 @@ fn test_crypto_stream_noncebytes() {
 }
 #[test]
 fn test_crypto_stream_primitive() {
+    use std::ffi::CStr;
     unsafe {
-        let s = crypto_stream_primitive();
-        let s = std::ffi::CStr::from_ptr(s).to_bytes();
-        assert!(s == crypto_stream_PRIMITIVE.as_bytes());
+        assert_eq!(CStr::from_ptr(crypto_stream_PRIMITIVE),
+                   CStr::from_ptr(crypto_stream_primitive()));
     }
 }
